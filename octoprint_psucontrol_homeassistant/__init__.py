@@ -92,14 +92,15 @@ class PSUControl_HomeAssistant(octoprint.plugin.StartupPlugin,
         _domainsplit = _entity_id.find('.')
         if _domainsplit < 0:
             _domain = 'switch'
-            _entity_id = _domain + '.' + _entity_id
         else:
             _domain = _entity_id[:_domainsplit]
+            _entity_id = _entity_id[_domainsplit+1:]
 
         if state:
             cmd = '/services/' + _domain + '/turn_' + state
         else:
             cmd = '/services/' + _domain + '/toggle'
+
         data = '{"entity_id":"' + _entity_id + '"}'
         self.send(cmd, data)
 
@@ -116,7 +117,9 @@ class PSUControl_HomeAssistant(octoprint.plugin.StartupPlugin,
         _domainsplit = _entity_id.find('.')
         if _domainsplit < 0:
             _entity_id = 'switch.' + _entity_id
-
+        else:
+            _domain = _entity_id[:_domainsplit]
+            _entity_id = _entity_id[_domainsplit+1:]
         cmd = '/states/' + _entity_id
 
         response = self.send(cmd)
